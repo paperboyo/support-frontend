@@ -6,5 +6,5 @@ import scala.concurrent.ExecutionContext
 
 class FastlyService(config: FastlyConfig)(implicit ec: ExecutionContext) {
 
-  def purgeAll(): Either[Throwable, Unit] = ???
+  def purgeSurrogateKey(key: String): Either[Throwable, Unit] = ???
 }
