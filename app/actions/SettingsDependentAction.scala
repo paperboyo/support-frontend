@@ -1,5 +1,6 @@
 package actions
 
+import admin.FastlyService
 import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -10,6 +11,6 @@ class SettingsDependentAction(override val parser: BodyParser[AnyContent])
 
   override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] =
     block(request).map(_.withHeaders(
-      "Surrogate-Key" -> "settings-dependent"
+      "Surrogate-Key" -> FastlyService.settingsDependentSurrogateKey
     ))
 }
