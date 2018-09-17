@@ -2,6 +2,7 @@
   position: relative;
   border: none;
   border-radius: 600px;
+  box-sizing: border-box;
   height: 60px;
   padding: 0 $gu-h-spacing;
   color: #fff;
@@ -17,7 +18,7 @@
   }
 
   @include mq($from: tablet) {
-    width: 404px;
+    width: 304px;
   }
 
   .svg-exclamation {
