@@ -24,7 +24,7 @@ import services.MembersDataService._
 import com.gu.support.config._
 import fixtures.TestCSRFComponents
 import admin.SwitchState.On
-import admin.{PaymentMethodsSwitch, Settings, Switches}
+import admin.{PaymentMethodsSwitch, Settings, SettingsProvider, Switches}
 
 class RegularContributionsTest extends WordSpec with MustMatchers with TestCSRFComponents {
 
@@ -111,7 +111,7 @@ class RegularContributionsTest extends WordSpec with MustMatchers with TestCSRFC
         stripeConfigProvider,
         payPalConfigProvider,
         stubControllerComponents(),
-        Settings(Switches(PaymentMethodsSwitch(On, On, None), PaymentMethodsSwitch(On, On, Some(On)), Map.empty, On, On)),
+        mock[SettingsProvider],
         guardianDomain = ".thegulocal.com"
       )
     }

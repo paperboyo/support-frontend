@@ -10,6 +10,7 @@ import com.amazonaws.services.s3.AmazonS3
 import config.{Configuration, FastlyConfig}
 import monitoring.SafeLogger
 import monitoring.SafeLogger._
+import play.api.libs.ws.WSClient
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
@@ -41,27 +42,27 @@ class S3SettingsProvider private (
       SettingsUpdate(_settings.getAndSet(settings), settings)
     }
 
-  def purgeIfChanged(diff: SettingsUpdate): Either[Throwable, SettingsUpdate] = {
-    val purgeResult = if (diff.isChange) fastlyService.purgeAll() else Right(())
-    purgeResult.map(_ => diff)
-  }
-
-  // TODO: check using a recursive function in this context is stack safe
-  private def pollS3(): Unit =
-    // TODO: should duration be configurable?
-    system.scheduler.scheduleOnce(1.minute) {
-      setSettingsFromSource()
-        .flatMap(purgeIfChanged)
-        .fold(
-          // TODO: cloud watch metric / alert ?
-          err => SafeLogger.error(scrub"error occurred getting settings from S3", err),
-          diff => if (diff.isChange) SafeLogger.info(s"settings changed from ${diff.old} to ${diff.current}")
-        )
-      pollS3()
-    }
+  //  def purgeIfChanged(diff: SettingsUpdate): Either[Throwable, SettingsUpdate] = {
+  //    val purgeResult = if (diff.isChange) fastlyService.purgeAll() else Right(())
+  //    purgeResult.map(_ => diff)
+  //  }
+  //
+  //  // TODO: check using a recursive function in this context is stack safe
+  //  private def pollS3(): Unit =
+  //    // TODO: should duration be configurable?
+  //    system.scheduler.scheduleOnce(1.minute) {
+  //      setSettingsFromSource()
+  //        .flatMap(purgeIfChanged)
+  //        .fold(
+  //          // TODO: cloud watch metric / alert ?
+  //          err => SafeLogger.error(scrub"error occurred getting settings from S3", err),
+  //          diff => if (diff.isChange) SafeLogger.info(s"settings changed from ${diff.old} to ${diff.current}")
+  //        )
+  //      pollS3()
+  //    }
 
   private def init(): Either[Throwable, Unit] =
-    setSettingsFromSource().map(_ => pollS3())
+    setSettingsFromSource().map(_ => ())
 }
 
 object S3SettingsProvider {
@@ -72,6 +73,7 @@ object S3SettingsProvider {
     // Ok using a single threaded execution context,
     // since the only one task is getting executed periodically (pollS3())
     implicit val ec: ExecutionContext = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(1))
+    implicit val ws: WSClient = ???
     val fastlyService = new FastlyService(fastlyConfig)
     val settingsProvider = new S3SettingsProvider(fastlyService, s3)
     settingsProvider.init().map(_ => settingsProvider)
