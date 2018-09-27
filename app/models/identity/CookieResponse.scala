@@ -1,6 +1,5 @@
 package models.identity
 
-import com.gu.identity.model.LiftJsonConfig
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import play.api.libs.json.{Json, Reads}

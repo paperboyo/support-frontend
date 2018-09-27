@@ -22,6 +22,7 @@ import { initReducer } from './contributionsLandingReducer';
 import { NewContributionForm } from './components/ContributionForm';
 import { NewContributionThanks } from './components/ContributionThanks';
 import { NewContributionBackground } from './components/ContributionBackground';
+import SignUpAsk from './components/SignUpAsk/SignUpAsk';
 
 
 // ----- Redux Store ----- //
@@ -81,6 +82,26 @@ const router = (
                 footer={<Footer disclaimer countryGroupId={countryGroupId} />}
               >
                 <NewContributionThanks />
+                <NewContributionBackground />
+              </Page>
+            );
+          }}
+        />
+        <Route
+          exact
+          path="/:countryId(uk|us|au|eu|int|nz|ca)/signupask.new"
+          render={() => {
+            setCookie(
+              ONE_OFF_CONTRIBUTION_COOKIE,
+              currentTimeInEpochMilliseconds.toString(),
+            );
+            return (
+              <Page
+                classModifiers={['contribution-thankyou']}
+                header={<NewHeader />}
+                footer={<Footer disclaimer countryGroupId={countryGroupId} />}
+              >
+                <SignUpAsk />
                 <NewContributionBackground />
               </Page>
             );

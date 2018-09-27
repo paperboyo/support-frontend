@@ -6,6 +6,8 @@
 @import '~components/directDebit/directDebitPopUpForm/directDebitPopUpForm';
 @import '~components/directDebit/directDebitForm/directDebitForm';
 @import '~components/errorMessage/errorMessage';
+@import '~components/ctaLink/ctaLink';
+@import 'components/SignUpAsk/signUpAsk';
 
 body {
   min-height: 100vh;
@@ -495,7 +497,7 @@ header[role="banner"] {
 
     header[role="banner"],
     footer[role="contentinfo"] {
-        grid-column: span 18;
+      grid-column: span 18;
     }
 
     .gu-content__content {
@@ -905,7 +907,7 @@ form {
   fill: gu-colour(garnett-neutral-5);
 }
 
-.svg-subscribe {
+.svg-subscribe, .svg-lock {
   width: 23px;
   height: 20px;
   fill: currentColor;
@@ -915,4 +917,3 @@ form {
   display: block;
   margin: ($gu-v-spacing * 2) -10px 0;
 }
-
