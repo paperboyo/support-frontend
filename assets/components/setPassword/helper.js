@@ -10,7 +10,7 @@ import { logPromise } from 'helpers/promise';
 // ----- Functions ----- //
 
 const requestData = (password: string, guestAccountRegistrationToken: string, csrf: CsrfState) => ({
-  method: 'POST',
+  method: 'PUT',
   headers: { 'Content-Type': 'application/json', 'Csrf-Token': csrf.token || '' },
   credentials: 'same-origin',
   body: JSON.stringify({ password, guestAccountRegistrationToken }),

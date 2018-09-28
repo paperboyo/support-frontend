@@ -20,9 +20,9 @@ import { NewHeader } from 'components/headers/new-header/Header';
 import { init as formInit } from './contributionsLandingInit';
 import { initReducer } from './contributionsLandingReducer';
 import { NewContributionForm } from './components/ContributionForm';
-import { NewContributionThanks } from './components/ContributionThanks';
+import  ContributionThankYouContainer  from './components/ContributionThankYouContainer';
 import { NewContributionBackground } from './components/ContributionBackground';
-import SignUpAsk from './components/SignUpAsk/SignUpAsk';
+import SetPassword from './components/SetPassword/SetPassword';
 
 
 // ----- Redux Store ----- //
@@ -81,7 +81,7 @@ const router = (
                 header={<NewHeader />}
                 footer={<Footer disclaimer countryGroupId={countryGroupId} />}
               >
-                <NewContributionThanks />
+                <ContributionThankYouContainer />
                 <NewContributionBackground />
               </Page>
             );
@@ -101,7 +101,7 @@ const router = (
                 header={<NewHeader />}
                 footer={<Footer disclaimer countryGroupId={countryGroupId} />}
               >
-                <SignUpAsk />
+                <SetPassword />
                 <NewContributionBackground />
               </Page>
             );

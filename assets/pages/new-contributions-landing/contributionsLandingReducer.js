@@ -24,6 +24,8 @@ export type UserFormData = {
   email: string | null,
 }
 
+export type ThankYouPageStage = 'setPassword' | 'thankYou';
+
 type FormData = UserFormData & {
   otherAmounts: {
     [Contrib]: { amount: string | null }
@@ -44,6 +46,7 @@ type FormState = {
   formData: FormData,
   paymentComplete: boolean,
   guestAccountCreationToken: ?string,
+  thankYouPageStage: ThankYouPageStage,
 };
 
 type PageState = {
@@ -102,6 +105,7 @@ function createFormReducer(countryGroupId: CountryGroupId) {
     isWaiting: false,
     paymentComplete: false,
     guestAccountCreationToken: null,
+    thankYouPageStage: 'setPassword',
   };
 
   return function formReducer(state: FormState = initialState, action: Action): FormState {
@@ -175,6 +179,9 @@ function createFormReducer(countryGroupId: CountryGroupId) {
 
       case 'SET_GUEST_ACCOUNT_CREATION_TOKEN':
         return { ...state, guestAccountCreationToken: action.guestAccountCreationToken };
+
+      case 'SET_THANK_YOU_PAGE_STAGE':
+        return { ...state, thankYouPageStage: action.thankYouPageStage };
 
       default:
         return state;
