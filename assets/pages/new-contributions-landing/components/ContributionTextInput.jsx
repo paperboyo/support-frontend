@@ -18,7 +18,7 @@ type PropTypes = {
   value: string | null,
   errorMessage: string | null,
   isValid: boolean,
-  checkoutFormHasBeenSubmitted: boolean,
+  formHasBeenSubmitted: boolean,
   onInput: (Event => void) | void,
   required?: boolean,
   autoCapitalize: 'off' | 'none' | 'on' | 'sentences' | 'words',
@@ -32,7 +32,7 @@ type PropTypes = {
 // ----- Render ----- //
 
 function NewContributionTextInput(props: PropTypes) {
-  const showError = !props.isValid && props.checkoutFormHasBeenSubmitted;
+  const showError = !props.isValid && props.formHasBeenSubmitted;
   const modifiersArray = showError ? ['invalid', props.id] : [props.id];
 
 

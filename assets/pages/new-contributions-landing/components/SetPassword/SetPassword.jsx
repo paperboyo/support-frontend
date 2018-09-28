@@ -17,7 +17,7 @@ import type { Csrf as CsrfState } from 'helpers/csrf/csrfReducer';
 import { NewContributionTextInput } from '../ContributionTextInput';
 import { CreateAccountButton } from './CreateAccountButton';
 import { type ThankYouPageStage } from '../../contributionsLandingReducer';
-import { setThankYouPageStage } from '../../contributionsLandingActions';
+import { setThankYouPageStage, setPasswordHasBeenSubmitted, updatePassword } from '../../contributionsLandingActions';
 import type { Action } from '../../../oneoff-contributions/helpers/checkoutForm/checkoutFormActions';
 
 // ----- Types ----- //
@@ -26,8 +26,11 @@ import type { Action } from '../../../oneoff-contributions/helpers/checkoutForm/
 type PropTypes = {
   contributionType: Contrib,
   email: string,
+  password: string,
   guestAccountCreationToken: string,
   setThankYouPageStage: (ThankYouPageStage) => void,
+  setPasswordHasBeenSubmitted: () => void,
+  updatePassword: (Event) => void,
   csrf: CsrfState,
 };
 /* eslint-enable react/no-unused-prop-types */
@@ -35,7 +38,9 @@ type PropTypes = {
 const mapStateToProps = state => ({
   contributionType: state.page.form.contributionType,
   email: state.page.form.formData.email,
+  password: state.page.form.setPasswordData.password,
   guestAccountCreationToken: state.page.form.guestAccountCreationToken,
+  passwordHasBeenSubmitted: state.page.form.passwordHasBeenSubmitted,
   csrf: state.page.csrf,
 });
 
@@ -43,6 +48,12 @@ function mapDispatchToProps(dispatch: Dispatch<Action>) {
   return {
     setThankYouPageStage: (thankYouPageStage: ThankYouPageStage) => {
       dispatch(setThankYouPageStage(thankYouPageStage));
+    },
+    setPasswordHasBeenSubmitted: () => {
+      dispatch(setPasswordHasBeenSubmitted());
+    },
+    updatePassword: (event: Event) => {
+      dispatch(updatePassword(event.target.value));
     }
   }
 }
@@ -50,14 +61,15 @@ function mapDispatchToProps(dispatch: Dispatch<Action>) {
 
 function onSubmit(props: PropTypes): Event => void {
   return (event) => {
+    props.setPasswordHasBeenSubmitted();
     event.preventDefault();
 
+    //TODO: make this work
     if (!(event.target: any).checkValidity()) {
       return;
     }
 
-    const password = document.getElementById('password').value;
-    setPasswordGuest(password, props.guestAccountCreationToken, props.csrf)
+    setPasswordGuest(props.password, props.guestAccountCreationToken, props.csrf)
     .then(response => {
        if (response === true){
          props.setThankYouPageStage('thankYou')
@@ -99,6 +111,11 @@ function SetPassword(props: PropTypes) {
             icon={<SvgPasswordKey />}
             autoComplete="off"
             autoCapitalize="words"
+            value={props.password}
+            onInput={props.updatePassword}
+            isValid={props.password.length >= 6 && props.password.length <= 72}
+            formHasBeenSubmitted={props.passwordHasBeenSubmitted}
+            errorMessage="Please enter a password between 6 and 72 characters long"
             required
           />
           <CreateAccountButton/>

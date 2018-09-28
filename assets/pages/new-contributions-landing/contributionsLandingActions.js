@@ -24,6 +24,7 @@ export type Action =
   | { type: 'UPDATE_FIRST_NAME', firstName: string }
   | { type: 'UPDATE_LAST_NAME', lastName: string }
   | { type: 'UPDATE_EMAIL', email: string }
+  | { type: 'UPDATE_PASSWORD', password: string }
   | { type: 'UPDATE_STATE', state: UsState | CaState | null }
   | { type: 'UPDATE_USER_FORM_DATA', userFormData: UserFormData }
   | { type: 'UPDATE_PAYMENT_READY', paymentReady: boolean, paymentHandler: ?{ [PaymentMethod]: PaymentHandler } }
@@ -49,6 +50,8 @@ const updateLastName = (lastName: string): Action => ({ type: 'UPDATE_LAST_NAME'
 
 const updateEmail = (email: string): Action => ({ type: 'UPDATE_EMAIL', email });
 
+const updatePassword = (password: string): Action => ({ type: 'UPDATE_PASSWORD', password });
+
 const updateUserFormData = (userFormData: UserFormData): Action => ({ type: 'UPDATE_USER_FORM_DATA', userFormData });
 
 const updateState = (state: UsState | CaState | null): Action => ({ type: 'UPDATE_STATE', state });
@@ -59,6 +62,9 @@ const selectAmount = (amount: Amount | 'other', contributionType: Contrib): Acti
   });
 
 const setCheckoutFormHasBeenSubmitted = (): Action => ({ type: 'SET_CHECKOUT_FORM_HAS_BEEN_SUBMITTED' });
+
+const setPasswordHasBeenSubmitted = (): Action => ({ type: 'SET_PASSWORD_HAS_BEEN_SUBMITTED' });
+
 
 const updateOtherAmount = (otherAmount: string): Action => ({ type: 'UPDATE_OTHER_AMOUNT', otherAmount });
 
@@ -234,4 +240,6 @@ export {
   setCheckoutFormHasBeenSubmitted,
   setGuestAccountCreationToken,
   setThankYouPageStage,
+  setPasswordHasBeenSubmitted,
+  updatePassword,
 };

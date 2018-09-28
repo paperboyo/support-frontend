@@ -34,6 +34,11 @@ type FormData = UserFormData & {
   checkoutFormHasBeenSubmitted: boolean,
 };
 
+type SetPasswordData = {
+  password: string,
+  passwordHasBeenSubmitted: boolean,
+}
+
 type FormState = {
   contributionType: Contrib,
   paymentMethod: PaymentMethod,
@@ -44,6 +49,7 @@ type FormState = {
   selectedAmounts: { [Contrib]: Amount | 'other' },
   isWaiting: boolean,
   formData: FormData,
+  setPasswordData: SetPasswordData,
   paymentComplete: boolean,
   guestAccountCreationToken: ?string,
   thankYouPageStage: ThankYouPageStage,
@@ -62,8 +68,8 @@ export type State = {
 };
 
 // ----- Functions ----- //
-
 function createFormReducer(countryGroupId: CountryGroupId) {
+
   const amountsForCountry: { [Contrib]: Amount[] } = {
     ONE_OFF: amounts('notintest').ONE_OFF[countryGroupId],
     MONTHLY: amounts('notintest').MONTHLY[countryGroupId],
@@ -100,6 +106,10 @@ function createFormReducer(countryGroupId: CountryGroupId) {
       state: null,
       checkoutFormHasBeenSubmitted: false,
     },
+    setPasswordData:{
+      password: '',
+      passwordHasBeenSubmitted: false,
+    },
     showOtherAmount: false,
     selectedAmounts: initialAmount,
     isWaiting: false,
@@ -115,40 +125,46 @@ function createFormReducer(countryGroupId: CountryGroupId) {
           ...state,
           contributionType: action.contributionType,
           showOtherAmount: false,
-          formData: { ...state.formData },
+          formData: {...state.formData},
         };
 
       case 'UPDATE_PAYMENT_METHOD':
-        return { ...state, paymentMethod: action.paymentMethod };
+        return {...state, paymentMethod: action.paymentMethod};
 
       case 'UPDATE_PAYMENT_READY':
         return action.paymentHandler
           ? {
             ...state,
             paymentReady: action.paymentReady,
-            paymentHandler: { ...state.paymentHandler, ...action.paymentHandler },
+            paymentHandler: {...state.paymentHandler, ...action.paymentHandler},
           }
-          : { ...state, paymentReady: action.paymentReady };
+          : {...state, paymentReady: action.paymentReady};
 
       case 'UPDATE_FIRST_NAME':
-        return { ...state, formData: { ...state.formData, firstName: action.firstName } };
+        return {...state, formData: {...state.formData, firstName: action.firstName}};
 
       case 'UPDATE_LAST_NAME':
-        return { ...state, formData: { ...state.formData, lastName: action.lastName } };
+        return {...state, formData: {...state.formData, lastName: action.lastName}};
 
       case 'UPDATE_EMAIL':
-        return { ...state, formData: { ...state.formData, email: action.email } };
+        return {...state, formData: {...state.formData, email: action.email}};
+
+      case 'UPDATE_PASSWORD':
+        return {...state, setPasswordData: {...state.setPasswordData, password: action.password}};
+
+      case 'SET_PASSWORD_HAS_BEEN_SUBMITTED':
+        return {...state, setPasswordData: {...state.setPasswordData, passwordHasBeenSubmitted: true}};
 
       case 'UPDATE_STATE':
-        return { ...state, formData: { ...state.formData, state: action.state } };
+        return {...state, formData: {...state.formData, state: action.state}};
 
       case 'UPDATE_USER_FORM_DATA':
-        return { ...state, formData: { ...state.formData, ...action.userFormData } };
+        return {...state, formData: {...state.formData, ...action.userFormData}};
 
       case 'SELECT_AMOUNT':
         return {
           ...state,
-          selectedAmounts: { ...state.selectedAmounts, [action.contributionType]: action.amount },
+          selectedAmounts: {...state.selectedAmounts, [action.contributionType]: action.amount},
         };
 
       case 'UPDATE_OTHER_AMOUNT':
@@ -166,22 +182,23 @@ function createFormReducer(countryGroupId: CountryGroupId) {
         };
 
       case 'PAYMENT_FAILURE':
-        return { ...state, paymentComplete: false, error: action.error };
+        return {...state, paymentComplete: false, error: action.error};
 
       case 'PAYMENT_WAITING':
-        return { ...state, paymentComplete: false, isWaiting: action.isWaiting };
+        return {...state, paymentComplete: false, isWaiting: action.isWaiting};
 
       case 'PAYMENT_SUCCESS':
-        return { ...state, paymentComplete: true };
+        return {...state, paymentComplete: true};
 
       case 'SET_CHECKOUT_FORM_HAS_BEEN_SUBMITTED':
-        return { ...state, formData: { ...state.formData, checkoutFormHasBeenSubmitted: true } };
+        return {...state, formData: {...state.formData, checkoutFormHasBeenSubmitted: true}};
+
 
       case 'SET_GUEST_ACCOUNT_CREATION_TOKEN':
-        return { ...state, guestAccountCreationToken: action.guestAccountCreationToken };
+        return {...state, guestAccountCreationToken: action.guestAccountCreationToken};
 
       case 'SET_THANK_YOU_PAGE_STAGE':
-        return { ...state, thankYouPageStage: action.thankYouPageStage };
+        return {...state, thankYouPageStage: action.thankYouPageStage};
 
       default:
         return state;
