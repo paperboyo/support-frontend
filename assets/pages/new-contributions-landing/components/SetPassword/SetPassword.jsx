@@ -39,8 +39,8 @@ const mapStateToProps = state => ({
   contributionType: state.page.form.contributionType,
   email: state.page.form.formData.email,
   password: state.page.form.setPasswordData.password,
+  passwordHasBeenSubmitted: state.page.form.setPasswordData.passwordHasBeenSubmitted,
   guestAccountCreationToken: state.page.form.guestAccountCreationToken,
-  passwordHasBeenSubmitted: state.page.form.passwordHasBeenSubmitted,
   csrf: state.page.csrf,
 });
 
@@ -84,6 +84,11 @@ function onSubmit(props: PropTypes): Event => void {
 // ----- Render ----- //
 
 function SetPassword(props: PropTypes) {
+  if (!props.guestAccountCreationToken || !props.email) {
+    props.setThankYouPageStage('thankYou');
+    return;
+  }
+
   return (<div className="set-password__container">
       <h1 className="header">Set up a free account to manage your payments</h1>
       <section className="set-password">

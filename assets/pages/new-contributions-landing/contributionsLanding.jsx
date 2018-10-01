@@ -87,26 +87,6 @@ const router = (
             );
           }}
         />
-        <Route
-          exact
-          path="/:countryId(uk|us|au|eu|int|nz|ca)/signupask.new"
-          render={() => {
-            setCookie(
-              ONE_OFF_CONTRIBUTION_COOKIE,
-              currentTimeInEpochMilliseconds.toString(),
-            );
-            return (
-              <Page
-                classModifiers={['contribution-thankyou']}
-                header={<NewHeader />}
-                footer={<Footer disclaimer countryGroupId={countryGroupId} />}
-              >
-                <SetPassword />
-                <NewContributionBackground />
-              </Page>
-            );
-          }}
-        />
       </div>
     </Provider>
   </BrowserRouter>

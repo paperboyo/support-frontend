@@ -19,7 +19,7 @@ type PropTypes = {
 
 const mapStateToProps = state => ({
   thankYouPageStage: state.page.form.thankYouPageStage,
-});
+  });
 
 
 
