@@ -27,7 +27,6 @@ function initialisePaymentMethod(state, dispatch) {
   }
 }
 
-
 const init = (store: Store<State, Action, Dispatch<Action>>) => {
   const { dispatch } = store;
   const state = store.getState();
@@ -35,8 +34,6 @@ const init = (store: Store<State, Action, Dispatch<Action>>) => {
 
   const { firstName, lastName, email } = state.page.user;
   dispatch(updateUserFormData({ firstName, lastName, email }));
-
-
 
 };
 

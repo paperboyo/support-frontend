@@ -130,7 +130,6 @@ class RegularContributions(
   }
 
   private def createContributorAndUser()(implicit request: OptionalAuthRequest[CreateRegularContributorRequest]) = {
-    print("here")
     val result = for {
       userIdWithOptionalToken <- identityService.getOrCreateUserIdFromEmail(request.body.email)
       user <- identityService.getUser(IdMinimalUser(userIdWithOptionalToken.userId, None))

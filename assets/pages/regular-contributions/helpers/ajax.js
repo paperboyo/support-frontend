@@ -244,7 +244,6 @@ function handleStatus(
 
       if (statusResponse.guestAccountCreationToken) {
         dispatch(setGuestAccountCreationToken(statusResponse.guestAccountCreationToken));
-        dispatch(setGuestAccountCreationToken(statusResponse.guestAccountCreationToken));
       }
 
       switch (statusResponse.status) {

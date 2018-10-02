@@ -16,7 +16,6 @@ const requestData = (password: string, guestAccountRegistrationToken: string, cs
   body: JSON.stringify({ password, guestAccountRegistrationToken }),
 });
 
-// Fire and forget, as we don't want to interrupt the flow
 function setPasswordGuest(
   password: string,
   guestAccountRegistrationToken: string,
@@ -26,9 +25,6 @@ function setPasswordGuest(
   return logPromise(fetch(`${routes.contributionsSetPasswordGuest}`, requestData(password, guestAccountRegistrationToken, csrf)))
     .then((response) => {
       if (response.status === 200) {
-        // response.json().then((json) => {
-        //   TODO: extract and set sign in cookies from json
-        // });
         return true;
       }
       logException('/contribute/set-password-guest endpoint returned an error');

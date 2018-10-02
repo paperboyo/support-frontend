@@ -25,10 +25,6 @@ const mapStateToProps = state => ({
 });
 
 
-
-
-
-
 // ----- Render ----- //
 
 function ContributionThankYou(props: PropTypes) {

@@ -5,7 +5,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import type {ThankYouPageStage} from '../contributionsLandingReducer';
+import { type ThankYouPageStage } from '../contributionsLandingReducer';
 import ContributionThankYou from './ContributionThankYou';
 import SetPassword from './SetPassword/SetPassword';
 
@@ -19,14 +19,13 @@ type PropTypes = {
 
 const mapStateToProps = state => ({
   thankYouPageStage: state.page.form.thankYouPageStage,
-  });
-
+});
 
 
 const thankYouPageStage: {
-  [ThankYouPageStage]: Node,
-}  = {
-  setPassword : (<SetPassword />),
+  [ThankYouPageStage]: React$Element<*>,
+} = {
+  setPassword: (<SetPassword />),
   thankYou: (<ContributionThankYou />),
 };
 

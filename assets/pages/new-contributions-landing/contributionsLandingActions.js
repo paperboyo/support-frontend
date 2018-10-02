@@ -16,7 +16,7 @@ import {
 } from 'helpers/paymentIntegrations/readerRevenueApis';
 import { derivePaymentApiAcquisitionData, getSupportAbTests, getOphanIds } from 'helpers/tracking/acquisitions';
 import trackConversion from 'helpers/tracking/conversions';
-import { type State, type UserFormData, type ThankYouPageStage} from './contributionsLandingReducer';
+import { type State, type UserFormData, type ThankYouPageStage } from './contributionsLandingReducer';
 
 export type Action =
   | { type: 'UPDATE_CONTRIBUTION_TYPE', contributionType: Contrib }
@@ -34,6 +34,7 @@ export type Action =
   | { type: 'PAYMENT_FAILURE', error: string }
   | { type: 'PAYMENT_WAITING', isWaiting: boolean }
   | { type: 'SET_CHECKOUT_FORM_HAS_BEEN_SUBMITTED' }
+  | { type: 'SET_PASSWORD_HAS_BEEN_SUBMITTED' }
   | { type: 'SET_GUEST_ACCOUNT_CREATION_TOKEN', guestAccountCreationToken: string }
   | { type: 'SET_THANK_YOU_PAGE_STAGE', thankYouPageStage: ThankYouPageStage }
   | { type: 'PAYMENT_SUCCESS' };
@@ -111,8 +112,8 @@ const setupRegularPayment = (data: PaymentFields) =>
           data,
           state.common.abParticipations,
           state.page.csrf,
-          (token: string)=> dispatch(setGuestAccountCreationToken(token)),
-          (thankYouPageStage: ThankYouPageStage) => dispatch(setThankYouPageStage(thankYouPageStage))
+          (token: string) => dispatch(setGuestAccountCreationToken(token)),
+          (thankYouPageStage: ThankYouPageStage) => dispatch(setThankYouPageStage(thankYouPageStage)),
         )));
         return;
 

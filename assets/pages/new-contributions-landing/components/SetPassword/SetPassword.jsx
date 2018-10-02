@@ -4,7 +4,7 @@
 
 import React from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { type Dispatch } from 'redux';
 
 import { type Contrib } from 'helpers/contributions';
 import { classNameWithModifiers } from 'helpers/utilities';
@@ -17,8 +17,7 @@ import type { Csrf as CsrfState } from 'helpers/csrf/csrfReducer';
 import { NewContributionTextInput } from '../ContributionTextInput';
 import { CreateAccountButton } from './CreateAccountButton';
 import { type ThankYouPageStage } from '../../contributionsLandingReducer';
-import { setThankYouPageStage, setPasswordHasBeenSubmitted, updatePassword } from '../../contributionsLandingActions';
-import type { Action } from '../../../oneoff-contributions/helpers/checkoutForm/checkoutFormActions';
+import { setThankYouPageStage, setPasswordHasBeenSubmitted, updatePassword, type Action } from '../../contributionsLandingActions';
 
 // ----- Types ----- //
 
@@ -30,6 +29,7 @@ type PropTypes = {
   guestAccountCreationToken: string,
   setThankYouPageStage: (ThankYouPageStage) => void,
   setPasswordHasBeenSubmitted: () => void,
+  passwordHasBeenSubmitted: boolean,
   updatePassword: (Event) => void,
   csrf: CsrfState,
 };
@@ -53,9 +53,11 @@ function mapDispatchToProps(dispatch: Dispatch<Action>) {
       dispatch(setPasswordHasBeenSubmitted());
     },
     updatePassword: (event: Event) => {
-      dispatch(updatePassword(event.target.value));
-    }
-  }
+      if (event.target instanceof HTMLInputElement) {
+        dispatch(updatePassword(event.target.value));
+      }
+    },
+  };
 }
 
 
@@ -64,19 +66,19 @@ function onSubmit(props: PropTypes): Event => void {
     props.setPasswordHasBeenSubmitted();
     event.preventDefault();
 
-    //TODO: make this work
     if (!(event.target: any).checkValidity()) {
       return;
     }
 
+    // TODO: send user to thank you page with error if password was not set
     setPasswordGuest(props.password, props.guestAccountCreationToken, props.csrf)
-    .then(response => {
-       if (response === true){
-         props.setThankYouPageStage('thankYou')
-       } else {
-         props.setThankYouPageStage('thankYou')
-      }
-    });
+      .then((response) => {
+        if (response === true) {
+          props.setThankYouPageStage('thankYouPasswordSet');
+        } else {
+          props.setThankYouPageStage('thankYouPasswordNotSet');
+        }
+      });
   };
 }
 
@@ -86,55 +88,58 @@ function onSubmit(props: PropTypes): Event => void {
 function SetPassword(props: PropTypes) {
   if (!props.guestAccountCreationToken || !props.email) {
     props.setThankYouPageStage('thankYou');
-    return;
+  } else {
+    return (
+      <div className="set-password__container">
+        <h1 className="header">Set up a free account to manage your payments</h1>
+        <section className="set-password">
+          <p className="set-password__standfirst">
+            Thank you for a valuable contribution. As a contributor, being signed in means you will no
+            longer see the “Since you’re here …” messages asking you to contribute to our journalism.
+          </p>
+          <form onSubmit={onSubmit(props)} className={classNameWithModifiers('form', ['contribution'])} noValidate>
+            <NewContributionTextInput
+              id="email"
+              name="contribution-email"
+              label="Email address"
+              value={props.email}
+              icon={<SvgEnvelope />}
+              autoComplete="off"
+              autoCapitalize="words"
+              errorMessage="Please enter a valid email address"
+              required
+              disabled
+            />
+            <NewContributionTextInput
+              id="password"
+              type="password"
+              name="contribution-password"
+              label="Set a password"
+              icon={<SvgPasswordKey />}
+              autoComplete="off"
+              autoCapitalize="words"
+              value={props.password}
+              onInput={props.updatePassword}
+              isValid={props.password.length >= 6 && props.password.length <= 72}
+              formHasBeenSubmitted={props.passwordHasBeenSubmitted}
+              errorMessage="Please enter a password between 6 and 72 characters long"
+              required
+            />
+            <CreateAccountButton />
+            <CtaLink
+              text="No, thank you"
+              accessibilityHint="no thank you"
+              id="qa-no-thankyou"
+              onClick={() => {
+                props.setThankYouPageStage('thankYou');
+              }}
+              modifierClasses={['form-navigation', 'no-thanks']}
+            />
+          </form>
+        </section>
+      </div>
+    );
   }
-
-  return (<div className="set-password__container">
-      <h1 className="header">Set up a free account to manage your payments</h1>
-      <section className="set-password">
-        <p className="set-password__standfirst">
-          Thank you for a valuable contribution. As a contributor, being signed in means you will no
-          longer see the “Since you’re here …” messages asking you to contribute to our journalism.
-        </p>
-        <form onSubmit={onSubmit(props)} className={classNameWithModifiers('form', ['contribution'])} noValidate>
-          <NewContributionTextInput
-            id="email"
-            name="contribution-email"
-            label="Email address"
-            value={props.email}
-            icon={<SvgEnvelope />}
-            autoComplete="off"
-            autoCapitalize="words"
-            required
-            disabled
-          />
-          <NewContributionTextInput
-            id="password"
-            type="password"
-            name="contribution-password"
-            label="Set a password"
-            icon={<SvgPasswordKey />}
-            autoComplete="off"
-            autoCapitalize="words"
-            value={props.password}
-            onInput={props.updatePassword}
-            isValid={props.password.length >= 6 && props.password.length <= 72}
-            formHasBeenSubmitted={props.passwordHasBeenSubmitted}
-            errorMessage="Please enter a password between 6 and 72 characters long"
-            required
-          />
-          <CreateAccountButton/>
-          <CtaLink
-            text="No, thank you"
-            accessibilityHint="no thank you"
-            id="qa-no-thankyou"
-            onClick={() => { props.setThankYouPageStage('thankYou')}}
-            modifierClasses={['form-navigation', 'no-thanks']}
-          />
-        </form>
-      </section>
-    </div>
-  );
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SetPassword);

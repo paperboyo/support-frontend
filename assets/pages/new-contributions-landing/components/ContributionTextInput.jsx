@@ -83,6 +83,7 @@ NewContributionTextInput.defaultProps = {
   min: undefined,
   disabled: false,
   formHasBeenSubmitted: false,
+  isValid: true,
 };
 
 export { NewContributionTextInput };
