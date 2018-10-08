@@ -292,7 +292,9 @@ function ContributionForm(props: PropTypes) {
             errorMessage="Please provide a state"
           />
           <NewContributionPayment onPaymentAuthorisation={onPaymentAuthorisation} />
-          <NewContributionSubmit />
+          <NewContributionSubmit
+            whenUnableToOpen={props.setCheckoutFormHasBeenSubmitted}
+          />
           {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
         </form>
         <DirectDebitPopUpForm
