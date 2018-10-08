@@ -165,7 +165,9 @@ function openStripePopup(props: PropTypes) {
 const formHandlersForRecurring = {
   PayPal: () => { /* TODO PayPal recurring */ },
   Stripe: openStripePopup,
-  DirectDebit: (props: PropTypes) => { props.openDirectDebitPopUp(); },
+  DirectDebit: (props: PropTypes) => {
+    props.openDirectDebitPopUp();
+  },
 };
 
 const formHandlers: PaymentMatrix<PropTypes => void> = {
@@ -195,7 +197,8 @@ function onSubmit(props: PropTypes): Event => void {
     if (!(event.target: any).checkValidity()) {
       return;
     }
-    formHandlers[props.contributionType][props.paymentMethod](props);
+    const a = formHandlers;
+    a[props.contributionType][props.paymentMethod](props);
   };
 }
 
