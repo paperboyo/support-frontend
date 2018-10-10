@@ -228,7 +228,9 @@ function ContributionForm(props: PropTypes) {
       />
       <ContributionFormFields />
       <NewContributionPayment onPaymentAuthorisation={onPaymentAuthorisation} />
-      <NewContributionSubmit />
+      <NewContributionSubmit
+        whenUnableToOpen={props.setCheckoutFormHasBeenSubmitted}
+      />
       {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
     </form>
   );
