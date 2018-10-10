@@ -76,17 +76,11 @@ import {
 // ----- Types ----- //
 /* eslint-disable react/no-unused-prop-types */
 type PropTypes = {|
-  paymentComplete: boolean,
-  error: CheckoutFailureReason | null,
   isWaiting: boolean,
   countryGroupId: CountryGroupId,
   selectedCountryGroupDetails: CountryMetaData,
   contributionType: Contrib,
   thankYouRoute: string,
-  firstName: string,
-  lastName: string,
-  email: string,
-  state: UsState | CaState | null,
   selectedAmounts: { [Contrib]: Amount | 'other' },
   otherAmount: string | null,
   paymentMethod: PaymentMethod,
@@ -104,7 +98,6 @@ type PropTypes = {|
   isDirectDebitPopUpOpen: boolean,
   createOneOffPayPalPayment: (data: CreatePaypalPaymentData) => void,
   currency: IsoCurrency,
-  payPalExpressButton: Node,
 |};
 
 // We only want to use the user state value if the form state value has not been changed since it was initialised,
@@ -115,7 +108,6 @@ const getCheckoutFormValue = (formValue: string | null, userValue: string | null
 /* eslint-enable react/no-unused-prop-types */
 
 const mapStateToProps = (state: State) => ({
-  paymentComplete: state.page.form.paymentComplete,
   isWaiting: state.page.form.isWaiting,
   countryGroupId: state.common.internationalisation.countryGroupId,
   firstName: getCheckoutFormValue(state.page.form.formData.firstName, state.page.user.firstName),
@@ -215,12 +207,7 @@ function onSubmit(props: PropTypes): Event => void {
 
 // ----- Render ----- //
 
-function ContributionFormContainer(props: PropTypes) {
-  const {
-    countryGroupId,
-    selectedCountryGroupDetails,
-    thankYouRoute,
-  } = props;
+function ContributionForm(props: PropTypes) {
 
   const onPaymentAuthorisation = (paymentAuthorisation: PaymentAuthorisation) => {
     props.setPaymentIsWaiting(true);
@@ -229,46 +216,24 @@ function ContributionFormContainer(props: PropTypes) {
 
   const checkOtherAmount: string => boolean = input =>
     isNotEmpty(input)
-    && isLargerOrEqual(config[props.countryGroupId][props.contributionType].min, input)
-    && isSmallerOrEqual(config[props.countryGroupId][props.contributionType].max, input)
     && maxTwoDecimals(input);
 
-  const showPayPalExpressButton = props.paymentMethod === 'PayPal' && props.contributionType !== 'ONE_OFF';
-  const formClassName = 'form--contribution';
 
-
-  return props.paymentComplete ?
-    <Redirect to={thankYouRoute} />
-    : (
-      <div className="gu-content__content">
-        <h1 className="header">{countryGroupSpecificDetails[countryGroupId].headerCopy}</h1>
-        <p className="blurb">{countryGroupSpecificDetails[countryGroupId].contributeCopy}</p>
-        <PaymentFailureMessage checkoutFailureReason={props.error} />
-        <form onSubmit={onSubmit(props)} className={classNameWithModifiers('form', ['contribution'])} noValidate>
-          <NewContributionType />
-          <NewContributionAmount
-            countryGroupDetails={selectedCountryGroupDetails}
-            checkOtherAmount={checkOtherAmount}
-          />
-          <ContributionFormFields />
-          <NewContributionPayment onPaymentAuthorisation={onPaymentAuthorisation} />
-          <NewContributionSubmit
-            whenUnableToOpen={props.setCheckoutFormHasBeenSubmitted}
-          />
-          {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
-        </form>
-        <DirectDebitPopUpForm
-          onPaymentAuthorisation={onPaymentAuthorisation}
-          isPopUpOpen={props.isDirectDebitPopUpOpen}
-        />
-      </div>
-    );
+  return (
+    <form onSubmit={onSubmit(props)} className={classNameWithModifiers('form', ['contribution'])} noValidate>
+      <NewContributionType />
+      <NewContributionAmount
+        countryGroupDetails={props.selectedCountryGroupDetails}
+        checkOtherAmount={checkOtherAmount}
+      />
+      <ContributionFormFields />
+      <NewContributionPayment onPaymentAuthorisation={onPaymentAuthorisation} />
+      <NewContributionSubmit />
+      {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
+    </form>
+  );
 }
 
-ContributionFormContainer.defaultProps = {
-  error: null,
-};
+const NewContributionForm = connect(mapStateToProps, mapDispatchToProps)(ContributionForm);
 
-const NewContributionFormContainer = connect(mapStateToProps, mapDispatchToProps)(ContributionFormContainer);
-
-export { NewContributionFormContainer };
+export { NewContributionForm };
