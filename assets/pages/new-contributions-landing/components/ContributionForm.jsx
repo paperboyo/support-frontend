@@ -76,6 +76,8 @@ import {
 // ----- Types ----- //
 /* eslint-disable react/no-unused-prop-types */
 type PropTypes = {|
+  paymentComplete: boolean,
+  paymentError: CheckoutFailureReason | null,
   isWaiting: boolean,
   countryGroupId: CountryGroupId,
   selectedCountryGroupDetails: CountryMetaData,
@@ -123,6 +125,7 @@ const mapStateToProps = (state: State) => ({
   checkoutFormHasBeenSubmitted: state.page.form.formData.checkoutFormHasBeenSubmitted,
   isDirectDebitPopUpOpen: state.page.directDebit.isPopUpOpen,
   currency: state.common.internationalisation.currencyId,
+  paymentError: state.page.form.paymentError,
   csrf: state.page.csrf,
   payPalHasLoaded: state.page.form.payPalHasLoaded,
   payPalSwitchStatus: state.common.settings.switches.recurringPaymentMethods.payPal,
@@ -216,8 +219,9 @@ function ContributionForm(props: PropTypes) {
 
   const checkOtherAmount: string => boolean = input =>
     isNotEmpty(input)
+    && isLargerOrEqual(config[props.countryGroupId][props.contributionType].min, input)
+    && isSmallerOrEqual(config[props.countryGroupId][props.contributionType].max, input)
     && maxTwoDecimals(input);
-
 
   return (
     <form onSubmit={onSubmit(props)} className={classNameWithModifiers('form', ['contribution'])} noValidate>
@@ -231,6 +235,7 @@ function ContributionForm(props: PropTypes) {
       <NewContributionSubmit
         whenUnableToOpen={props.setCheckoutFormHasBeenSubmitted}
       />
+      <PaymentFailureMessage checkoutFailureReason={props.paymentError} />
       {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
     </form>
   );
