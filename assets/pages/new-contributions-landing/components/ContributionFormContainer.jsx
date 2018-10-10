@@ -215,7 +215,7 @@ function onSubmit(props: PropTypes): Event => void {
 
 // ----- Render ----- //
 
-function ContributionFormContainer(props: PropTypes) {
+function ContributionForm(props: PropTypes) {
   const {
     countryGroupId,
     selectedCountryGroupDetails,
@@ -265,10 +265,10 @@ function ContributionFormContainer(props: PropTypes) {
     );
 }
 
-ContributionFormContainer.defaultProps = {
+ContributionForm.defaultProps = {
   error: null,
 };
 
-const NewContributionFormContainer = connect(mapStateToProps, mapDispatchToProps)(ContributionFormContainer);
+const NewContributionForm = connect(mapStateToProps, mapDispatchToProps)(ContributionForm);
 
-export { NewContributionFormContainer };
+export { NewContributionForm };

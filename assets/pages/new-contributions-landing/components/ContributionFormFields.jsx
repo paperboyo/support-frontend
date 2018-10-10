@@ -4,7 +4,6 @@
 
 import PayPalExpressButton from 'components/paymentButtons/payPalExpressButton/payPalExpressButtonNewFlow';
 import { formIsValid } from 'helpers/checkoutForm/checkoutForm';
-import { ContributionFormFields } from 'pages/new-contributions-landing/components/ContributionFormFields';
 import { setPayPalHasLoaded } from 'pages/new-contributions-landing/contributionsLandingActions';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -209,17 +208,24 @@ function onSubmit(props: PropTypes): Event => void {
     if (!(event.target: any).checkValidity()) {
       return;
     }
-    formHandlers[props.contributionType][props.paymentMethod](props);
+    const a = formHandlers;
+    a[props.contributionType][props.paymentMethod](props);
   };
 }
 
 // ----- Render ----- //
 
-function ContributionFormContainer(props: PropTypes) {
+function ContributionForm(props: PropTypes) {
   const {
     countryGroupId,
     selectedCountryGroupDetails,
     thankYouRoute,
+    firstName,
+    lastName,
+    email,
+    state,
+    isSignedIn,
+    checkoutFormHasBeenSubmitted,
   } = props;
 
   const onPaymentAuthorisation = (paymentAuthorisation: PaymentAuthorisation) => {
@@ -250,10 +256,63 @@ function ContributionFormContainer(props: PropTypes) {
             countryGroupDetails={selectedCountryGroupDetails}
             checkOtherAmount={checkOtherAmount}
           />
-          <ContributionFormFields />
+          <NewContributionTextInput
+            id="contributionEmail"
+            name="contribution-email"
+            label="Email address"
+            value={email}
+            type="email"
+            autoComplete="email"
+            placeholder="example@domain.com"
+            icon={<SvgEnvelope />}
+            onInput={props.updateEmail}
+            isValid={checkEmail(email)}
+            pattern={emailRegexPattern}
+            formHasBeenSubmitted={checkoutFormHasBeenSubmitted}
+            errorMessage="Please provide a valid email address"
+            required
+            disabled={isSignedIn}
+          />
+          <Signout isSignedIn={isSignedIn} />
+          <NewContributionTextInput
+            id="contributionFirstName"
+            name="contribution-fname"
+            label="First name"
+            value={firstName}
+            icon={<SvgUser />}
+            autoComplete="given-name"
+            autoCapitalize="words"
+            onInput={props.updateFirstName}
+            isValid={checkFirstName(firstName)}
+            formHasBeenSubmitted={checkoutFormHasBeenSubmitted}
+            errorMessage="Please provide your first name"
+            required
+          />
+          <NewContributionTextInput
+            id="contributionLastName"
+            name="contribution-lname"
+            label="Last name"
+            value={lastName}
+            icon={<SvgUser />}
+            autoComplete="family-name"
+            autoCapitalize="words"
+            onInput={props.updateLastName}
+            isValid={checkLastName(lastName)}
+            formHasBeenSubmitted={checkoutFormHasBeenSubmitted}
+            errorMessage="Please provide your last name"
+            required
+          />
+          <NewContributionState
+            onChange={props.updateState}
+            selectedState={state}
+            isValid={checkState(state)}
+            formHasBeenSubmitted={checkoutFormHasBeenSubmitted}
+            errorMessage="Please provide a state"
+          />
           <NewContributionPayment onPaymentAuthorisation={onPaymentAuthorisation} />
           <NewContributionSubmit
             whenUnableToOpen={props.setCheckoutFormHasBeenSubmitted}
+            payPalExpressButton={props.payPalExpressButton}
           />
           {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
         </form>
@@ -265,10 +324,10 @@ function ContributionFormContainer(props: PropTypes) {
     );
 }
 
-ContributionFormContainer.defaultProps = {
+ContributionForm.defaultProps = {
   error: null,
 };
 
-const NewContributionFormContainer = connect(mapStateToProps, mapDispatchToProps)(ContributionFormContainer);
+const NewContributionForm = connect(mapStateToProps, mapDispatchToProps)(ContributionForm);
 
-export { NewContributionFormContainer };
+export { NewContributionForm };
