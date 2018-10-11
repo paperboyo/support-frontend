@@ -2,8 +2,8 @@
 
 // ----- Imports ----- //
 
-import { ContributionFormFields } from 'pages/new-contributions-landing/components/ContributionFormFields';
-import { setPayPalHasLoaded } from 'pages/new-contributions-landing/contributionsLandingActions';
+import type { Amount } from 'helpers/contributions';
+import type { CountryMetaData } from 'helpers/internationalisation/contributions';
 import React from 'react';
 import { connect } from 'react-redux';
 
@@ -13,7 +13,6 @@ import { type PaymentHandler } from 'helpers/checkouts';
 import {
   config,
   type Contrib,
-  type Amount,
   type PaymentMatrix,
   type PaymentMethod,
   baseHandlers,
@@ -37,19 +36,17 @@ import {
   maxTwoDecimals,
 } from 'helpers/formValidation';
 
+import { ContributionFormFields } from './ContributionFormFields';
 import { NewContributionType } from './ContributionType';
 import { NewContributionAmount } from './ContributionAmount';
 import { NewContributionPayment } from './ContributionPayment';
 import { NewContributionSubmit } from './ContributionSubmit';
 
+
 import { type State } from '../contributionsLandingReducer';
 
 import {
   paymentWaiting,
-  updateFirstName,
-  updateLastName,
-  updateEmail,
-  updateState,
   onThirdPartyPaymentAuthorised,
   setCheckoutFormHasBeenSubmitted,
   createOneOffPayPalPayment,
@@ -59,30 +56,22 @@ import {
 // ----- Types ----- //
 /* eslint-disable react/no-unused-prop-types */
 type PropTypes = {|
-  paymentComplete: boolean,
-  paymentError: CheckoutFailureReason | null,
   isWaiting: boolean,
   countryGroupId: CountryGroupId,
-  selectedCountryGroupDetails: CountryMetaData,
-  contributionType: Contrib,
-  thankYouRoute: string,
-  selectedAmounts: { [Contrib]: Amount | 'other' },
+  email: string,
   otherAmount: string | null,
   paymentMethod: PaymentMethod,
-  isSignedIn: boolean,
   paymentHandlers: { [PaymentMethod]: PaymentHandler | null },
-  updateFirstName: Event => void,
-  updateLastName: Event => void,
-  updateEmail: Event => void,
-  updateState: Event => void,
-  setPaymentIsWaiting: boolean => void,
-  onThirdPartyPaymentAuthorised: PaymentAuthorisation => void,
-  checkoutFormHasBeenSubmitted: boolean,
-  setCheckoutFormHasBeenSubmitted: () => void,
-  openDirectDebitPopUp: () => void,
-  isDirectDebitPopUpOpen: boolean,
-  createOneOffPayPalPayment: (data: CreatePaypalPaymentData) => void,
+  contributionType: Contrib,
   currency: IsoCurrency,
+  paymentError: CheckoutFailureReason | null,
+  selectedAmounts: { [Contrib]: Amount | 'other' },
+  selectedCountryGroupDetails: CountryMetaData,
+  onThirdPartyPaymentAuthorised: PaymentAuthorisation => void,
+  setPaymentIsWaiting: boolean => void,
+  openDirectDebitPopUp: () => void,
+  setCheckoutFormHasBeenSubmitted: () => void,
+  createOneOffPayPalPayment: (data: CreatePaypalPaymentData) => void,
 |};
 
 // We only want to use the user state value if the form state value has not been changed since it was initialised,
@@ -95,40 +84,24 @@ const getCheckoutFormValue = (formValue: string | null, userValue: string | null
 const mapStateToProps = (state: State) => ({
   isWaiting: state.page.form.isWaiting,
   countryGroupId: state.common.internationalisation.countryGroupId,
-  firstName: getCheckoutFormValue(state.page.form.formData.firstName, state.page.user.firstName),
-  lastName: getCheckoutFormValue(state.page.form.formData.lastName, state.page.user.lastName),
   email: getCheckoutFormValue(state.page.form.formData.email, state.page.user.email),
-  state: state.page.form.formData.state,
-  selectedAmounts: state.page.form.selectedAmounts,
   otherAmount: state.page.form.formData.otherAmounts[state.page.form.contributionType].amount,
   paymentMethod: state.page.form.paymentMethod,
-  isSignedIn: state.page.user.isSignedIn,
   paymentHandlers: state.page.form.paymentHandlers,
   contributionType: state.page.form.contributionType,
-  checkoutFormHasBeenSubmitted: state.page.form.formData.checkoutFormHasBeenSubmitted,
-  isDirectDebitPopUpOpen: state.page.directDebit.isPopUpOpen,
   currency: state.common.internationalisation.currencyId,
   paymentError: state.page.form.paymentError,
-  csrf: state.page.csrf,
-  payPalHasLoaded: state.page.form.payPalHasLoaded,
-  payPalSwitchStatus: state.common.settings.switches.recurringPaymentMethods.payPal,
-  paymentMethod: state.page.form.paymentMethod,
+  selectedAmounts: state.page.form.selectedAmounts,
+
 });
 
 
 const mapDispatchToProps = (dispatch: Function) => ({
-  updateFirstName: (event) => { dispatch(updateFirstName(event.target.value)); },
-  updateLastName: (event) => { dispatch(updateLastName(event.target.value)); },
-  updateEmail: (event) => { dispatch(updateEmail(event.target.value)); },
-  updateState: (event) => { dispatch(updateState(event.target.value === '' ? null : event.target.value)); },
   setPaymentIsWaiting: (isWaiting) => { dispatch(paymentWaiting(isWaiting)); },
   onThirdPartyPaymentAuthorised: (token) => { dispatch(onThirdPartyPaymentAuthorised(token)); },
   setCheckoutFormHasBeenSubmitted: () => { dispatch(setCheckoutFormHasBeenSubmitted()); },
   openDirectDebitPopUp: () => { dispatch(openDirectDebitPopUp()); },
   createOneOffPayPalPayment: (data: CreatePaypalPaymentData) => { dispatch(createOneOffPayPalPayment(data)); },
-  payPalSetHasLoaded: () => {
-    dispatch(setPayPalHasLoaded());
-  },
 });
 
 // ----- Functions ----- //
@@ -215,9 +188,7 @@ function ContributionForm(props: PropTypes) {
       />
       <ContributionFormFields />
       <NewContributionPayment onPaymentAuthorisation={onPaymentAuthorisation} />
-      <NewContributionSubmit
-        whenUnableToOpen={props.setCheckoutFormHasBeenSubmitted}
-      />
+      <NewContributionSubmit />
       <PaymentFailureMessage checkoutFailureReason={props.paymentError} />
       {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
     </form>
