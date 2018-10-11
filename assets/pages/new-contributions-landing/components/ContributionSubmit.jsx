@@ -7,11 +7,15 @@ import { connect } from 'react-redux';
 
 import { getFrequency, type Amount, type Contrib, type PaymentMethod } from 'helpers/contributions';
 import { getPaymentDescription } from 'helpers/checkouts';
+import type { PaymentHandler } from 'helpers/checkouts';
 import { type IsoCurrency, currencies, spokenCurrencies } from 'helpers/internationalisation/currency';
+import type { Csrf as CsrfState } from 'helpers/csrf/csrfReducer';
 
 import SvgArrowRight from 'components/svgs/arrowRightStraight';
 
+
 import { formatAmount } from './ContributionAmount';
+import PayPalExpressButton from './PayPalExpressButton';
 import { type State } from '../contributionsLandingReducer';
 
 // ----- Types ----- //
@@ -23,6 +27,8 @@ type PropTypes = {
   isWaiting: boolean,
   selectedAmounts: { [Contrib]: Amount | 'other' },
   otherAmount: string | null,
+  paymentHandlers: { [PaymentMethod]: PaymentHandler | null },
+  csrf: CsrfState,
 };
 
 const mapStateToProps = (state: State) =>
@@ -33,6 +39,7 @@ const mapStateToProps = (state: State) =>
     paymentMethod: state.page.form.paymentMethod,
     selectedAmounts: state.page.form.selectedAmounts,
     otherAmount: state.page.form.formData.otherAmounts[state.page.form.contributionType].amount,
+    csrf: state.page.csrf,
   });
 
 // ----- Render ----- //
@@ -55,7 +62,17 @@ function ContributionSubmit(props: PropTypes) {
       <div className="form__submit">
         {showPayPalExpressButton ? (
           // TODO PayPal recurring
-          <button disabled={props.isWaiting}>PayPal Express Button</button>
+          <PayPalExpressButton
+            amount={5}
+            onPaymentAuthorisation={() => alert('payment auth')}
+            csrf={props.csrf}
+            currencyId={props.currency}
+            switchStatus="On"
+            canOpen={() => true}
+            whenUnableToOpen={() => alert('unable to open')}
+            formClass="form"
+            payPalExpressHandler={props.paymentHandlers.PayPal}
+          />
         ) : (
           <button disabled={props.isWaiting} className="form__submit-button" type="submit">
             Contribute&nbsp;

@@ -15,9 +15,13 @@ import type { IsoCountry } from 'helpers/internationalisation/country';
 
 export type PaymentMethodSwitch = 'directDebit' | 'payPal' | 'stripe';
 
-type StripeHandler = { open: Function, close: Function };
+export type StripeHandler = { open: Function, close: Function };
 
-export type PaymentHandler = StripeHandler;
+// This third-party JS is poorly documented, not to mention deprecated,
+// so we won't both trying to properly type it for now.
+export type PayPalExpressHandler = Object;
+
+export type PaymentHandler = StripeHandler | PayPalExpressHandler;
 
 // ----- Functions ----- //
 

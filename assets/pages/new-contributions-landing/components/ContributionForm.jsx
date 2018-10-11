@@ -305,6 +305,7 @@ function ContributionForm(props: PropTypes) {
           <PaymentFailureMessage checkoutFailureReason={props.paymentError} />
           <NewContributionSubmit
             whenUnableToOpen={props.setCheckoutFormHasBeenSubmitted}
+            paymentHandlers={props.paymentHandlers}
           />
           {props.isWaiting ? <ProgressMessage message={['Processing transaction', 'Please wait']} /> : null}
         </form>

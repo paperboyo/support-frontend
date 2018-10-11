@@ -5,7 +5,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { type PaymentHandler, getPaymentLabel, getValidPaymentMethods } from 'helpers/checkouts';
+import { type PaymentHandler, type StripeHandler, type PayPalExpressHandler, getPaymentLabel, getValidPaymentMethods } from 'helpers/checkouts';
 import { type Switches } from 'helpers/settings';
 import {
   type Contrib,
@@ -21,6 +21,7 @@ import { type PaymentAuthorisation } from 'helpers/paymentIntegrations/newPaymen
 import SvgNewCreditCard from 'components/svgs/newCreditCard';
 import SvgPayPal from 'components/svgs/paypal';
 import { logException } from 'helpers/logger';
+import { loadPayPalExpress } from 'helpers/paymentIntegrations/newPaymentFlow/payPalExpressCheckout';
 
 import { type State } from '../contributionsLandingReducer';
 import { type Action, updatePaymentMethod, isPaymentReady } from '../contributionsLandingActions';
@@ -73,14 +74,19 @@ function initialiseStripeCheckout(props: PropTypes) {
   // into
   // paymentHandlers: { [Contrib]: {[PaymentMethod]: PaymentHandler | null }}
   setupStripeCheckout(onPaymentAuthorisation, contributionType, currency, isTestUser)
-    .then((handler: PaymentHandler) => props.isPaymentReady(true, { Stripe: handler }));
+    .then((handler: StripeHandler) => props.isPaymentReady(true, { Stripe: handler }));
+}
+
+function initialisePayPalExpress(props: PropTypes) {
+  loadPayPalExpress()
+    .then((handler: PayPalExpressHandler) => props.isPaymentReady(true, { PayPal: handler }));
 }
 
 // Bizarrely, adding a type to this object means the type-checking on the
 // paymentMethodInitialisers is no longer accurate.
 // (Flow thinks it's OK when it's missing required properties).
 const recurringPaymentMethodInitialisers = {
-  PayPal: () => { /* TODO PayPal recurring */ },
+  PayPal: initialisePayPalExpress,
   Stripe: initialiseStripeCheckout,
   DirectDebit: () => { /* no initialisation required */ },
 };

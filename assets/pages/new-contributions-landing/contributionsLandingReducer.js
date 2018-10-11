@@ -77,7 +77,7 @@ export type State = {
 };
 
 // ----- Functions ----- //
-
+let x = 0;
 function createFormReducer(countryGroupId: CountryGroupId) {
   const amountsForCountry: { [Contrib]: Amount[] } = {
     ONE_OFF: amounts('notintest').ONE_OFF[countryGroupId],
