@@ -10,7 +10,7 @@ import codecs.CirceDecoders.statusEncoder
 import com.gu.identity.play.{AccessCredentials, AuthenticatedIdUser, IdMinimalUser, IdUser}
 import com.gu.support.config.{PayPalConfigProvider, StripeConfigProvider}
 import com.gu.support.workers.model.AccessScope.{AccessScopeBySessionId, AccessScopeNoRestriction}
-import com.gu.support.workers.model.User
+import com.gu.support.workers.model.{AccessScope, User}
 import config.Configuration.GuardianDomain
 import cookies.RecurringContributionCookie
 import io.circe.syntax._
@@ -114,9 +114,18 @@ class RegularContributions(
   private def createContributorWithUser(fullUser: AuthenticatedIdUser)(implicit request: OptionalAuthRequest[CreateRegularContributorRequest]) = {
     SafeLogger.info(s"[${request.uuid}] User ${fullUser.id} is attempting to create a new ${request.body.contribution.billingPeriod} contribution")
 
+    //If the user has not been email-verified yet then use the session ID for scope
+    def accessScopeForUser(user: IdUser, request: OptionalAuthRequest[CreateRegularContributorRequest]): Either[String, AccessScope] = {
+      val validated = user.statusFields.flatMap(_.userEmailValidated).contains(true)
+
+      if (validated) Right(AccessScopeNoRestriction)
+      else request.body.maybeSessionId.map(id => AccessScopeBySessionId(id)).toRight("no read access token for un-verified user")
+    }
+
     val result = for {
-      user <- identityService.getUser(fullUser) // FIXME also need to check they are email verified before using AccessScopeNoRestriction
-      response <- client.createContributor(request.body, contributor(user, request.body), request.uuid, AccessScopeNoRestriction).leftMap(_.toString)
+      user <- identityService.getUser(fullUser)
+      accessScope <- EitherT(Future.successful(accessScopeForUser(user, request)))
+      response <- client.createContributor(request.body, contributor(user, request.body), request.uuid, accessScope).leftMap(_.toString)
     } yield response
 
     result.fold(
