@@ -4,6 +4,8 @@ import java.net.URI
 
 import cats.data.EitherT
 import cats.implicits._
+import codecs.CirceDecoders.deriveCodec
+import codecs.Codec
 import com.google.common.net.InetAddresses
 import com.gu.identity.play.{IdMinimalUser, IdUser}
 import config.Identity
@@ -15,7 +17,6 @@ import monitoring.SafeLogger._
 import play.api.libs.json.Json
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.mvc.RequestHeader
-
 import scala.concurrent.duration._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -55,6 +56,13 @@ object IdentityService {
   }
 }
 
+case class EmailHasPasswordResponse(emailHasPassword: Boolean)
+
+object EmailHasPasswordResponse {
+  implicit val codec: Codec[EmailHasPasswordResponse] = deriveCodec
+}
+
+
 class HttpIdentityService(apiUrl: String, apiClientToken: String)(implicit wsClient: WSClient) extends IdentityService {
 
   import IdentityServiceEnrichers._
@@ -76,6 +84,12 @@ class HttpIdentityService(apiUrl: String, apiClientToken: String)(implicit wsCli
         SafeLogger.error(scrub"Failed to update the user's marketing preferences $e")
         false
     }
+  }
+
+  def emailHasPassword(
+    email: String
+  )(implicit ec: ExecutionContext): EitherT[Future, String, EmailHasPasswordResponse] = {
+
   }
 
   def setPasswordGuest(
