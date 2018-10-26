@@ -12,7 +12,7 @@ import services.IdentityService
 import cats.implicits._
 import config.Configuration.GuardianDomain
 import models.identity.responses.SetGuestPasswordResponseCookies
-import services.paypal.Token
+import codecs.CirceDecoders._
 
 import scala.concurrent.ExecutionContext
 
@@ -54,17 +54,17 @@ class IdentityController(
       )
   }
 
-  def emailHasPasword(): Action[EmailHasPasswordRequest] = PrivateAction.async(circe.json[EmailHasPasswordRequest]) { implicit request =>
+  def getUserType(): Action[EmailHasPasswordRequest] = PrivateAction.async(circe.json[EmailHasPasswordRequest]) { implicit request =>
     identityService
-      .emailHasPassword(request.body.email)
+      .getUserType(request.body.email)
       .fold(
         err => {
-          SafeLogger.error(scrub"Failed to retrieve whether email has password for ${request.body.email}: ${err.toString}")
+          SafeLogger.error(scrub"Failed to retrieve user type for ${request.body.email}: ${err.toString}")
           InternalServerError
         },
         response => {
-          SafeLogger.info(s"Successfully set password using guest account registration token ${request.body.guestAccountRegistrationToken}")
-          Ok(EmailHasPasswordRequest(response).asJson)
+          SafeLogger.info(s"Successfully retrieved user type for ${request.body.email}")
+          Ok(response.asJson)
         }
       )
   }

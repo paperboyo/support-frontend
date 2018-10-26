@@ -56,7 +56,7 @@ POST  /contribute/send-marketing                     controllers.IdentityControl
 
 # ------ Identity ------£
 PUT  /identity/set-password-guest                 controllers.IdentityController.setPasswordGuest
-POST  /identity/email-has-password                  controllers.IdentityController.emailHasPassword
+GET  /identity/getUserType                        controllers.IdentityController.getUserType
 
 
 GET  /contribute/one-off                            controllers.OneOffContributions.displayForm()
