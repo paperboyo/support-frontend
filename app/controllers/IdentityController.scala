@@ -54,9 +54,10 @@ class IdentityController(
       )
   }
 
-  def getUserType(): Action[EmailHasPasswordRequest] = PrivateAction.async(circe.json[EmailHasPasswordRequest]) { implicit request =>
+  def getUserType(email: String): Action[EmailHasPasswordRequest] = PrivateAction.async(circe.json[EmailHasPasswordRequest]) { implicit request =>
+    SafeLogger.info("Hello")
     identityService
-      .getUserType(request.body.email)
+      .getUserType(email)
       .fold(
         err => {
           SafeLogger.error(scrub"Failed to retrieve user type for ${request.body.email}: ${err.toString}")

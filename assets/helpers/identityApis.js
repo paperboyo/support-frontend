@@ -37,7 +37,7 @@ function doesUserHavePassword(
   csrf: CsrfState,
 ): Promise<boolean> {
 
-  return logPromise(fetch(`${routes.emailHasPassword}`, requestOptions({ email }, 'same-origin', 'POST', csrf)))
+  return logPromise(fetch(`${routes.emailHasPassword}/${email}`, requestOptions({ email }, 'same-origin', 'GET', csrf)))
     .then((response) => {
       if (response.status === 200) {
         return true;

@@ -16,6 +16,9 @@ function getRequestOptions(
   credentials: Credentials,
   csrf: CsrfState | null,
 ): Object {
+  if(csrf) {
+    console.log(csrf.token || 'none');
+  }
   const headers = csrf !== null
     ? { 'Content-Type': 'application/json', 'Csrf-Token': csrf.token || '' }
     : { 'Content-Type': 'application/json' };
