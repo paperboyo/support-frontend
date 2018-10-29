@@ -84,6 +84,13 @@ class RegularContributionsClient(
     requestId: UUID,
     accessScope: AccessScope
   ): EitherT[Future, RegularContributionError, StatusResponse] = {
+    val acquisitionData = AcquisitionData(
+      ophanIds = request.ophanIds,
+      referrerAcquisitionData = request.referrerAcquisitionData,
+      supportAbTests = request.supportAbTests
+    )
+
+    SafeLogger.info("Acquisition data = " + acquisitionData.toString)
     val createPaymentMethodState = CreatePaymentMethodState(
       requestId = requestId,
       user = user,
