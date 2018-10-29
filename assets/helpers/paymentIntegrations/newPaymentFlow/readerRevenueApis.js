@@ -11,7 +11,6 @@ import { type BillingPeriod } from 'helpers/contributions';
 import { type Participations } from 'helpers/abTests/abtest';
 import { type CaState, type IsoCountry, type UsState } from 'helpers/internationalisation/country';
 import { logPromise, pollUntilPromise } from 'helpers/promise';
-import { logException } from 'helpers/logger';
 import { fetchJson, getRequestOptions, requestOptions } from 'helpers/fetch';
 import trackConversion from 'helpers/tracking/conversions';
 

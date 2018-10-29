@@ -54,17 +54,17 @@ class IdentityController(
       )
   }
 
-  def getUserType(email: String): Action[EmailHasPasswordRequest] = PrivateAction.async(circe.json[EmailHasPasswordRequest]) { implicit request =>
+  def getUserType(email: String): Action[AnyContent] = PrivateAction.async { implicit request =>
     SafeLogger.info("Hello")
     identityService
       .getUserType(email)
       .fold(
         err => {
-          SafeLogger.error(scrub"Failed to retrieve user type for ${request.body.email}: ${err.toString}")
+          SafeLogger.error(scrub"Failed to retrieve user type for ${email}: ${err.toString}")
           InternalServerError
         },
         response => {
-          SafeLogger.info(s"Successfully retrieved user type for ${request.body.email}")
+          SafeLogger.info(s"Successfully retrieved user type for ${email}")
           Ok(response.asJson)
         }
       )
@@ -81,7 +81,3 @@ object SetPasswordRequest {
 }
 case class SetPasswordRequest(password: String, guestAccountRegistrationToken: String)
 
-object EmailHasPasswordRequest {
-  implicit val decoder: Decoder[EmailHasPasswordRequest] = deriveDecoder
-}
-case class EmailHasPasswordRequest(email: String)

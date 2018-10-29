@@ -152,7 +152,7 @@ const checkIfEmailHasPassword = (email: string) =>
     const state = getState();
     dispatch(setIdentityRequestPending(true));
     fetchJson(
-      `/dummy/${encodeURIComponent(email)}`,
+      `${routes.getUserType}?email=${encodeURIComponent(email)}`,
       getRequestOptions('same-origin', state.page.csrf),
     ).then(({ userType }) => {
       dispatch(setIdentityRequestPending(false));
