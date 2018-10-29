@@ -12,6 +12,7 @@ import services.IdentityService
 import cats.implicits._
 import config.Configuration.GuardianDomain
 import models.identity.responses.SetGuestPasswordResponseCookies
+import codecs.CirceDecoders._
 
 import scala.concurrent.ExecutionContext
 
@@ -52,6 +53,22 @@ class IdentityController(
         }
       )
   }
+
+  def getUserType(email: String): Action[EmailHasPasswordRequest] = PrivateAction.async(circe.json[EmailHasPasswordRequest]) { implicit request =>
+    SafeLogger.info("Hello")
+    identityService
+      .getUserType(email)
+      .fold(
+        err => {
+          SafeLogger.error(scrub"Failed to retrieve user type for ${request.body.email}: ${err.toString}")
+          InternalServerError
+        },
+        response => {
+          SafeLogger.info(s"Successfully retrieved user type for ${request.body.email}")
+          Ok(response.asJson)
+        }
+      )
+  }
 }
 
 object SendMarketingRequest {
@@ -63,3 +80,8 @@ object SetPasswordRequest {
   implicit val decoder: Decoder[SetPasswordRequest] = deriveDecoder
 }
 case class SetPasswordRequest(password: String, guestAccountRegistrationToken: String)
+
+object EmailHasPasswordRequest {
+  implicit val decoder: Decoder[EmailHasPasswordRequest] = deriveDecoder
+}
+case class EmailHasPasswordRequest(email: String)
