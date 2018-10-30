@@ -248,7 +248,9 @@ const init = (country: IsoCountry, countryGroupId: CountryGroupId, abTests: Test
   const mvt: number = getMvtId();
   const participations: Participations = getParticipations(abTests, mvt, country, countryGroupId);
   const urlParticipations: ?Participations = getParticipationsFromUrl();
-  const newPaymentFlowParticipation: Participations = getNewPaymentFlowParticipation(window.guardian.oldOrNewPaymentFlow);
+  const newPaymentFlowParticipation: Participations =
+    getNewPaymentFlowParticipation(window.guardian.oldOrNewPaymentFlow);
+
   setLocalStorageParticipations(Object.assign({}, participations, urlParticipations, newPaymentFlowParticipation));
   trackABOphan(participations, false);
 
