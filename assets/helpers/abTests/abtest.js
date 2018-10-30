@@ -237,12 +237,19 @@ const trackABOphan = (participations: Participations, complete: boolean): void =
   });
 };
 
+const getNewPaymentFlowParticipation = (oldOrNewFlow: 'old' | 'new'): Participations => {
+  return oldOrNewFlow === 'new' ?
+    { newPaymentFlow: 'newPaymentFlow' } :
+    { newPaymentFlow: 'control' };
+};
+
 const init = (country: IsoCountry, countryGroupId: CountryGroupId, abTests: Tests): Participations => {
 
   const mvt: number = getMvtId();
   const participations: Participations = getParticipations(abTests, mvt, country, countryGroupId);
   const urlParticipations: ?Participations = getParticipationsFromUrl();
-  setLocalStorageParticipations(Object.assign({}, participations, urlParticipations));
+  const newPaymentFlowParticipation: Participations = getNewPaymentFlowParticipation(window.guardian.oldOrNewPaymentFlow);
+  setLocalStorageParticipations(Object.assign({}, participations, urlParticipations, newPaymentFlowParticipation));
   trackABOphan(participations, false);
 
   return participations;
