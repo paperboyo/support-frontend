@@ -15,6 +15,7 @@ import { formClassName, setShouldValidateFunctions } from './formFields';
 // ----- Functions ----- //
 
 const submitYourDetailsForm = (dispatch: Dispatch<CheckoutAction>) => {
+  // TODO - check if sign in needed
   if (formIsValid(formClassName)) {
     dispatch(setStage('payment'));
     setShouldValidateFunctions.forEach(f => dispatch(f(false)));
@@ -34,6 +35,7 @@ function mapStateToProps(state: State) {
     displayName: state.page.user.displayName,
     isSignedIn: state.page.user.isSignedIn,
     stage: state.page.checkoutForm.stage,
+    // TODO - params
   };
 }
 

@@ -49,6 +49,8 @@ const init = (dispatch: Function) => {
     dispatch(setPostDeploymentTestUser(true));
   }
 
+  // TODO - initialise user type
+
   if (windowHasUser) {
     dispatch(setId(window.guardian.user.id));
     dispatch(setEmail(window.guardian.user.email));

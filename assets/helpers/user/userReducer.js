@@ -26,7 +26,7 @@ export type User = {
 
 
 // ----- Setup ----- //
-
+// TODO - set user type
 const initialState: User = {
   id: '',
   email: '',

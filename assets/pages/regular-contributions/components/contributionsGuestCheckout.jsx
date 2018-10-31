@@ -32,6 +32,7 @@ type PropTypes = {|
   onNextButtonClick: () => void,
   onBackClick: () => void,
   stage: Stage,
+  // TODO - params
 |};
 
 // ----- Component ----- //

@@ -160,6 +160,7 @@ function NameForm(props: PropTypes) {
   return (
     <form className={formClassName}>
       {
+        // TODO - call checkIfEmailHasPassword on update, and display sign in prompt
         !props.isSignedIn ? (
           <TextInput
             id="email"

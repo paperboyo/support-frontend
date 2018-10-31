@@ -4,6 +4,7 @@
 
 import { setSession } from 'helpers/storage';
 
+// TODO - set user type state
 export type Action =
   | { type: 'SET_USER_ID', id: string }
   | { type: 'SET_DISPLAY_NAME', name: string }
